@@ -10,33 +10,19 @@ def r2(y, y_predicted):
 
 def gradient_descent(x, y):
     w = np.zeros((x.shape[1], 1))
-    delta_w = np.inf
+    delta = np.inf
 
     i = 0
     etha = 0.01
 
-    while delta_w > 1e-4 and i < 35000:
-        error = x.dot(w) - y
-        gradient = x.T.dot(error) / len(y)
+    while delta > 1e-4 and i < 35000:
+        gradient = x.T.dot(x.dot(w) - y) / len(y)
         w_next = w - etha * gradient
         i += 1
-        delta_w = np.linalg.norm(w - w_next)
+        delta = np.linalg.norm(w - w_next)
         w = w_next
 
     return w
-
-def gradient(x, y):
-    N = len(x)
-    w = np.zeros((x.shape[1], 1))
-    eta = 0.01
-
-    maxIteration = 300
-    for i in range(maxIteration):
-        error = x.dot(w) - y
-        gradient = x.T.dot(error) / N
-        w = w - eta * gradient
-    return w
-
 
 if __name__ == '__main__':
     file_name = "Features_Variant_1.csv"
@@ -59,14 +45,12 @@ if __name__ == '__main__':
     kf = KFold(n_splits=5)
 
     for i, (train_indices, test_indices) in enumerate(kf.split(X_norm)):
-        out = "Fold {}".format(i)
-        print(out)
 
         X_train, X_test = X_norm[train_indices], X_norm[test_indices]
         Y_train, Y_test = Y[train_indices], Y[test_indices]
 
         weights[i] = gradient_descent(X_train, Y_train)
-        W = gradient(X_train, Y_train)
+
         Y_pred_test = X_test.dot(weights[i])
         Y_pred_train = X_train.dot(weights[i])
 
